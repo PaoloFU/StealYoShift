@@ -53,18 +53,57 @@ br["password"] = password    #the key "password" is the variable that takes the 
 logged_in = br.submit()   #submitting the login credentials   
 
 #Print all open shifts (BEST,LSM,ARC)
+bestURLList = {"https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-12-05"}
+arcURLList = {"https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-12-05"}
+lsmURLList = {"https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-12-05"}
 print 'Open Shifts'
+print '-----------'
+print ''
+print 'BEST SHIFTS'
+print '-----------'
+print ''
+for curr_url in bestURLList:
+	#print "Searching: " + curr_url
+	os = br.open(curr_url).read()
+	soup = BeautifulSoup(os)
+	list = soup.findAll('div', attrs={'class':'schedule'})
+	for p in list:
+		print p.text
+
+print ''		
+print 'ARC SHIFTS'
+print '----------'
+print ''
+for curr_url in arcURLList:
+	#print "Searching: " + curr_url
+	os = br.open(curr_url).read()
+	soup = BeautifulSoup(os)
+	list = soup.findAll('div', attrs={'class':'schedule'})
+	for p in list:
+		print p.text
+
+print ''
+print 'LSM SHIFTS'
+print '----------'
+print ''
+for curr_url in lsmURLList:
+	#print "Searching: " + curr_url
+	os = br.open(curr_url).read()
+	soup = BeautifulSoup(os)
+	list = soup.findAll('div', attrs={'class':'schedule'})
+	for p in list:
+		print p.text
+	
+'''
 os = br.open("https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19").read()
 soup = BeautifulSoup(os)
-list = soup.findAll('div', attrs={'id':'scheduleTabs'})
+list = soup.findAll('div', attrs={'class':'scheduleShift '})
 for p in list:
 	print p.text
 	#print p.find('p' , attrs={'class':'startTime'})
 	#print p.find('div' , attrs ={'style':'width: 100%; text-align: center;'})
-
+'''
 #print(os) #printing the body of the redirected url after login  
-
-
 
 #req = br.open("http://school.dwit.edu.np/mod/assign/").read() 
 #accessing other url(s) after login is done this way
