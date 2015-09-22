@@ -1,6 +1,7 @@
 import mechanize
 import cookielib
 import getpass
+import re
 from BeautifulSoup import BeautifulSoup
 
 # Browser
@@ -68,7 +69,21 @@ for curr_url in bestURLList:
 	soup = BeautifulSoup(os)
 	list = soup.findAll('div', attrs={'class':'schedule'})
 	for p in list:
-		print p.text
+		if p.text.find("Posted") != -1:
+			info = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2}|[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",p.text)
+			dateStr = ''
+			timeStr = ''
+			#consStr = ''
+			info.remove(u'')
+			#print info
+			for j in info:
+				if re.search(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})", j) is not None:
+					dateStr = j
+				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
+					timeStr = j
+				if j.find("Posted") != -1:
+					print dateStr + ' ' + timeStr + ' ' + j
+			
 
 print ''		
 print 'ARC SHIFTS'
@@ -80,7 +95,20 @@ for curr_url in arcURLList:
 	soup = BeautifulSoup(os)
 	list = soup.findAll('div', attrs={'class':'schedule'})
 	for p in list:
-		print p.text
+		if p.text.find("Posted") != -1:
+			info = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2}|[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",p.text)
+			dateStr = ''
+			timeStr = ''
+			#consStr = ''
+			info.remove(u'')
+			#print info
+			for j in info:
+				if re.search(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})", j) is not None:
+					dateStr = j
+				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
+					timeStr = j
+				if j.find("Posted") != -1:
+					print dateStr + ' ' + timeStr + ' ' + j
 
 print ''
 print 'LSM SHIFTS'
@@ -92,8 +120,21 @@ for curr_url in lsmURLList:
 	soup = BeautifulSoup(os)
 	list = soup.findAll('div', attrs={'class':'schedule'})
 	for p in list:
-		print p.text
-	
+		if p.text.find("Posted") != -1:
+			info = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2}|[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",p.text)
+			dateStr = ''
+			timeStr = ''
+			#consStr = ''
+			info.remove(u'')
+			#print info
+			for j in info:
+				if re.search(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})", j) is not None:
+					dateStr = j
+				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
+					timeStr = j
+				if j.find("Posted") != -1:
+					print dateStr + ' ' + timeStr + ' ' + j
+
 '''
 os = br.open("https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19").read()
 soup = BeautifulSoup(os)
