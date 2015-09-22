@@ -2,7 +2,23 @@ import mechanize
 import cookielib
 import getpass
 import re
+import smtplib
 from BeautifulSoup import BeautifulSoup
+
+def get_api(cfg):
+  graph = facebook.GraphAPI(cfg['access_token'])
+  # Get page token to post as the page. You can skip 
+  # the following if you want to post as yourself. 
+  resp = graph.get_object('me/accounts')
+  page_access_token = None
+  for page in resp['data']:
+    if page['id'] == cfg['page_id']:
+      page_access_token = page['access_token']
+  graph = facebook.GraphAPI(page_access_token)
+  return graph
+  # You can also skip the above if you get a page token:
+  # http://stackoverflow.com/questions/8231877/facebook-access-token-for-pages
+  # and make that long-lived token as in Step 3
 
 # Browser
 br = mechanize.Browser()
@@ -53,6 +69,14 @@ br["password"] = password    #the key "password" is the variable that takes the 
 
 logged_in = br.submit()   #submitting the login credentials   
 
+#Email stuff
+fromaddr = 'paolofeu@gmail.com'
+toaddrs = 'trixmonkey@gmail.com'
+
+eusername = raw_input('Enter gmail username: ')
+epassword = getpass.getpass('Enter gmail password: ')
+
+
 #Print all open shifts (BEST,LSM,ARC)
 bestURLList = {"https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-12-05"}
 arcURLList = {"https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-12-05"}
@@ -63,6 +87,11 @@ print ''
 print 'BEST SHIFTS'
 print '-----------'
 print ''
+emsg = "\r\n".join([
+	"From: paolofeu@gmail.com",
+	"To: trixmonkey@gmail.com",
+	"Subject: Open shifts",
+	"","BEST"])
 for curr_url in bestURLList:
 	#print "Searching: " + curr_url
 	os = br.open(curr_url).read()
@@ -82,13 +111,16 @@ for curr_url in bestURLList:
 				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
 					timeStr = j
 				if j.find("Posted") != -1:
-					print dateStr + ' ' + timeStr + ' ' + j
-			
+					msg = dateStr + ' ' + timeStr + ' ' + j
+					print msg
+					emsg = "\r\n".join([emsg,msg])
 
+			
 print ''		
 print 'ARC SHIFTS'
 print '----------'
 print ''
+emsg = "\r\n".join([emsg,"ARC"])
 for curr_url in arcURLList:
 	#print "Searching: " + curr_url
 	os = br.open(curr_url).read()
@@ -108,12 +140,15 @@ for curr_url in arcURLList:
 				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
 					timeStr = j
 				if j.find("Posted") != -1:
-					print dateStr + ' ' + timeStr + ' ' + j
+					msg = dateStr + ' ' + timeStr + ' ' + j
+					print msg
+					emsg = "\r\n".join([emsg,msg])
 
 print ''
 print 'LSM SHIFTS'
 print '----------'
 print ''
+emsg = "\r\n".join([emsg,"LSM"])
 for curr_url in lsmURLList:
 	#print "Searching: " + curr_url
 	os = br.open(curr_url).read()
@@ -133,19 +168,13 @@ for curr_url in lsmURLList:
 				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", j) is not None: 
 					timeStr = j
 				if j.find("Posted") != -1:
-					print dateStr + ' ' + timeStr + ' ' + j
+					msg = dateStr + ' ' + timeStr + ' ' + j
+					print msg
+					emsg = "\r\n".join([emsg,msg])
 
-'''
-os = br.open("https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19").read()
-soup = BeautifulSoup(os)
-list = soup.findAll('div', attrs={'class':'scheduleShift '})
-for p in list:
-	print p.text
-	#print p.find('p' , attrs={'class':'startTime'})
-	#print p.find('div' , attrs ={'style':'width: 100%; text-align: center;'})
-'''
-#print(os) #printing the body of the redirected url after login  
-
-#req = br.open("http://school.dwit.edu.np/mod/assign/").read() 
-#accessing other url(s) after login is done this way
-
+server = smtplib.SMTP('smtp.gmail.com:587')
+server.ehlo()
+server.starttls()
+server.login(eusername,epassword)
+server.sendmail(fromaddr,toaddrs, emsg)
+server.quit()
