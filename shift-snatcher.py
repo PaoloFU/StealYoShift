@@ -4,6 +4,7 @@ import getpass
 import re
 import smtplib
 from BeautifulSoup import BeautifulSoup
+from os import path
 
 #Format email (global)
 emsg = "\r\n".join([
@@ -37,8 +38,7 @@ def shiftPageParser(url):
 			if col.has_key('class'):
 				dateIndex = dateIndex + 1
 				dateStr = datesList[dateIndex]
-			#Check if there is an open shift in col
-			#print col
+			#Check if there is an open shift in col			
 			info = re.split(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",col.text)
 			for str in info:
 				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", str) is not None: 
@@ -95,15 +95,16 @@ logged_in = br.submit()   #submitting the login credentials
 
 #Email stuff
 fromaddr = '@gmail.com'
-toaddrs = '@gmail.com'
+toaddrs = ['@gmail.com']
 
 eusername = '' #raw_input('Enter gmail username: ')
 epassword = '' #getpass.getpass('Enter gmail password: ')
 
 #Print all open shifts (BEST,LSM,ARC)
-bestURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-12-05"]
-arcURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-12-05"]
-lsmURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-09-19","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-09-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-03","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-10","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-17","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-24","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-12-05"]
+bestURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-12-05"]
+arcURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-12-05"]
+lsmURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-12-05"]
+dispURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-12-05"]
 
 print 'Open Shifts'
 print '-----------'
@@ -141,11 +142,37 @@ emsg = "\r\n".join([
 	
 for curr_url in lsmURLList:
 	shiftPageParser(curr_url)
+	
+print ''
+print 'DISP SHIFTS'
+print '-----------'
+print ''
+
+emsg = "\r\n".join([
+	emsg,
+	"DISP SHIFTS",
+	"----------------------"])
+	
+for curr_url in dispURLList:
+	shiftPageParser(curr_url)
+	
+file_path = "C:\Users\Admin\Desktop\shift.txt" //shift.txt
+target = open(file_path, 'r+')
+old_emsg = target.read()
+target.seek(0)
+
+
+#print old_emsg
 
 #Send Email
-server = smtplib.SMTP('smtp.gmail.com:587')
-server.ehlo()
-server.starttls()
-server.login(eusername,epassword)
-server.sendmail(fromaddr,toaddrs, emsg)
-server.quit()
+if old_emsg != emsg:
+	server = smtplib.SMTP('smtp.gmail.com:587')
+	server.ehlo()
+	server.starttls()
+	server.login(eusername,epassword)
+	for toaddr in toaddrs:
+		server.sendmail(fromaddr,toaddr, emsg)
+	server.quit()
+	target.truncate()
+	target.write(emsg)
+target.close()
