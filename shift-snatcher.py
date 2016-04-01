@@ -8,48 +8,58 @@ from os import path
 
 #Format email (global)
 emsg = "\r\n".join([
-	"From: @gmail.com",
-	"To: @gmail.com",
-	"Subject: Open shifts",
-	"",
-	"BEST SHIFTS",
-	"----------------------"])
+        "From: @gmail.com",
+        "To: @gmail.com",
+        "Subject: Open shifts",
+        "",
+        "BEST SHIFTS",
+        "----------------------"])
 
 def shiftPageParser(url):
-	global emsg
-	os = br.open(url).read()
-	soup = BeautifulSoup(os)
-	
-	#Check if there are any posted shifts
-	schedule = soup.findAll('div', attrs={'class':'schedule'})	
-	if schedule[0].text.find("Posted by") != -1:
-		dates = soup.findAll('tr')
-		datesList = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})",dates[0].text)
-		datesList = [datesList[1],datesList[3],datesList[5],datesList[7],datesList[9],datesList[11],datesList[13]]
-		#print datesList
-		dateIndex = -1
-		dateStr = ''
-		timeStr = ''
-		consStr = ''
-		
-		columns = soup.findAll('td')
-		for col in columns:
-			#Set new date if needed
-			if col.has_key('class'):
-				dateIndex = dateIndex + 1
-				dateStr = datesList[dateIndex]
-			#Check if there is an open shift in col			
-			info = re.split(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",col.text)
-			for str in info:
-				if re.search(r"([0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", str) is not None: 
-					timeStr = str
-				if str.find("Posted by") != -1:
-					consStr = str
-					msg = dateStr + ' ' + timeStr + ' ' + consStr
-					print msg
-					emsg = "\r\n".join([emsg,
-										msg])
-					
+        global emsg
+        os = br.open(url).read()
+        soup = BeautifulSoup(os)
+        
+        #Check if there are any posted shifts
+        schedule = soup.findAll('div', attrs={'class':'schedule'})      
+        if schedule[0].text.find("Posted by") != -9:
+                dates = soup.findAll('tr')
+                datesList = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})",dates[0].text)
+                datesList = [datesList[1],datesList[3],datesList[5],datesList[7],datesList[9],datesList[11],datesList[13]]
+                #print datesList
+                dateIndex = -1
+                dateStr = ''
+                timeStr = ''
+                consStr = ''
+                
+                columns = soup.findAll('td')
+                for col in columns:
+                        #Set new date if needed
+                        if col.has_key('class'):
+                                dateIndex = dateIndex + 1
+                                dateStr = datesList[dateIndex]
+                        #Check if there is an open shift in col
+                        thelist = []
+                        #print col
+                        posttimes = col.findAll('p')
+                        #print posttimes
+                        for pt in posttimes:
+                                #print pt.text
+                        #print col.text
+                        #info = re.split(r"([1]{0,1}[0-9]{1}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})",col.text)
+                        #print info
+                        #for str in info:
+                                #if re.search(r"([1]{0,1}[0-9]{1}[a:][0-9]{1,2}[A-Z]{1,2}[a |a-]{3}[0-9]{1,2}[a:][0-9]{1,2}[A-Z]{1,2})", str) is not None: 
+                                timeStr = pt.text
+                                #if str.find("Posted by") != -1:
+                                        #consStr = str
+                                msg = dateStr + ' ' + timeStr
+                                print msg
+                                thelist.append(msg)
+                                thelist.sort()
+                        for shift in thelist:
+                                emsg = "\r\n".join([emsg, shift])
+                                        
 # Browser
 br = mechanize.Browser()
 
@@ -88,8 +98,8 @@ br.form = list(br.forms())[0]
 #username = raw_input('Enter username: ')
 #password = getpass.getpass('Enter password: ')
 
-br["username"] = ''#username #the key "username" is the variable that takes the username/email value   
-br["password"] = '' #password    #the key "password" is the variable that takes the password value   
+br["username"] = 'netid'#username #the key "username" is the variable that takes the username/email value   
+br["password"] = 'password' #password    #the key "password" is the variable that takes the password value   
 
 logged_in = br.submit()   #submitting the login credentials   
 
@@ -97,14 +107,14 @@ logged_in = br.submit()   #submitting the login credentials
 fromaddr = '@gmail.com'
 toaddrs = ['@gmail.com']
 
-eusername = '' #raw_input('Enter gmail username: ')
-epassword = '' #getpass.getpass('Enter gmail password: ')
+eusername = 'gmail' #raw_input('Enter gmail username: ')
+epassword = 'password' #getpass.getpass('Enter gmail password: ')
 
 #Print all open shifts (BEST,LSM,ARC)
-bestURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2015-12-05"]
-arcURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2015-12-05"]
-lsmURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2015-12-05"]
-dispURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-10-31","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-07","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-14","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-21","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-11-28","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2015-12-05"]
+bestURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-03-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-04-02","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-04-09","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-04-16","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-04-23","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-04-30","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/22/?start_date=2016-05-07"]
+arcURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-03-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-04-02","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-04-09","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-04-16","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-04-23","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-04-30","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/19/?start_date=2016-05-07"]
+lsmURLList  = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-03-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-04-02","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-04-09","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-04-16","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-04-23","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-04-30","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/24/?start_date=2016-05-07"]
+dispURLList = ["https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-03-26","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-04-02","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-04-09","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-04-16","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-04-23","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-04-30","https://sc-apps-new.rutgers.edu/portal/scheduling/open_shifts/20/?start_date=2016-05-07"]
 
 print 'Open Shifts'
 print '-----------'
@@ -113,50 +123,50 @@ print 'BEST SHIFTS'
 print '-----------'
 print ''
 
-	
+        
 for curr_url in bestURLList:
-	shiftPageParser(curr_url)
-			
-print ''		
+        shiftPageParser(curr_url)
+                        
+print ''                
 print 'ARC SHIFTS'
 print '----------'
 print ''
 
 emsg = "\r\n".join([
-	emsg,
-	"ARC SHIFTS",
-	"----------------------"])
-	
+        emsg,
+        "ARC SHIFTS",
+        "----------------------"])
+        
 for curr_url in arcURLList:
-	shiftPageParser(curr_url)
-	
+        shiftPageParser(curr_url)
+        
 print ''
 print 'LSM SHIFTS'
 print '----------'
 print ''
 
 emsg = "\r\n".join([
-	emsg,
-	"LSM SHIFTS",
-	"----------------------"])
-	
+        emsg,
+        "LSM SHIFTS",
+        "----------------------"])
+        
 for curr_url in lsmURLList:
-	shiftPageParser(curr_url)
-	
+        shiftPageParser(curr_url)
+        
 print ''
 print 'DISP SHIFTS'
 print '-----------'
 print ''
 
 emsg = "\r\n".join([
-	emsg,
-	"DISP SHIFTS",
-	"----------------------"])
-	
+        emsg,
+        "DISP SHIFTS",
+        "----------------------"])
+        
 for curr_url in dispURLList:
-	shiftPageParser(curr_url)
-	
-file_path = "C:\Users\Admin\Desktop\shift.txt" //shift.txt
+        shiftPageParser(curr_url)
+        
+file_path = "C:\\shift.txt"
 target = open(file_path, 'r+')
 old_emsg = target.read()
 target.seek(0)
@@ -166,13 +176,13 @@ target.seek(0)
 
 #Send Email
 if old_emsg != emsg:
-	server = smtplib.SMTP('smtp.gmail.com:587')
-	server.ehlo()
-	server.starttls()
-	server.login(eusername,epassword)
-	for toaddr in toaddrs:
-		server.sendmail(fromaddr,toaddr, emsg)
-	server.quit()
-	target.truncate()
-	target.write(emsg)
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.ehlo()
+        server.starttls()
+        server.login(eusername,epassword)
+        for toaddr in toaddrs:
+                server.sendmail(fromaddr,toaddr, emsg)
+        server.quit()
+        target.truncate()
+        target.write(emsg)
 target.close()
