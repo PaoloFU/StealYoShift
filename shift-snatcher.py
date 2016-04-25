@@ -22,7 +22,7 @@ def shiftPageParser(url):
         
         #Check if there are any posted shifts
         schedule = soup.findAll('div', attrs={'class':'schedule'})      
-        if schedule[0].text.find("Posted by") != -9:
+        if schedule[0].text.find("Posted by") != -1:
                 dates = soup.findAll('tr')
                 datesList = re.split(r"([A-Z][a-z]{2}[a,][a ][A-Z][a-z]{2}[a ][0-9]{1,2})",dates[0].text)
                 datesList = [datesList[1],datesList[3],datesList[5],datesList[7],datesList[9],datesList[11],datesList[13]]
